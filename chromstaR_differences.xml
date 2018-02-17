@@ -23,10 +23,10 @@
 		<param type="float"   name="differentialPosterior" value="0.9999"    label="Minimum differential posterior to detect pairwise differences (between 0 and 1)"/>
 	</inputs>
 	<outputs>
-		<collection name="output1" label="Differential chromatin states" type="list">
+		<collection name="chromstateDiffsBED" label="Differential chromatin states" type="list">
 			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="chromatin-diffs"/>
 		</collection>  
-		<collection name="output2" label="Pairwise differential peaks" type="list">
+		<collection name="pairwiseDiffsBED" label="Pairwise differential peaks" type="list">
 			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="pairwise-diffs"/>
 		</collection>  
 	</outputs>

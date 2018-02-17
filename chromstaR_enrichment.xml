@@ -36,7 +36,7 @@
 		<param type="integer" name="sortBySample"                       label="Number of sample by which the count heatmap is sorted" optional="True"/>
 	</inputs>
 	<outputs>
-		<collection name="output1" label="Enrichment plots" type="list">
+		<collection name="enrichmentPlots" label="Enrichment plots" type="list">
 			<discover_datasets pattern="__designation_and_ext__" format="png" directory="plotEnrichment"/>
 		</collection>  
 	</outputs>

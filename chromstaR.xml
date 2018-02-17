@@ -105,14 +105,14 @@ $sample.inputfile	$sample.mark	$sample.condition	$sample.replicate	$sample.paire
 		<param type="boolean" name="perChrom"       truevalue="TRUE" falsevalue="FALSE" checked="True" label="Whether or not to do the multivariate part per chromosome"/>
 	</inputs>
 	<outputs>
-		<data       name="output1" label="chromstaR-object" format="rdata" from_work_dir="chromstaR-result.RData"/>
-		<collection name="output2" label="Peak calls" type="list">
+		<data       name="chromstarObject" label="chromstaR-object" format="rdata" from_work_dir="chromstaR-result.RData"/>
+		<collection name="peakCallsBED" label="Peak calls" type="list">
 			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="peak-calls"/>
 		</collection>  
-		<collection name="output3" label="Chromatin states" type="list">
+		<collection name="chromatinStatesBED" label="Chromatin states" type="list">
 			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="chromatin-states"/>
 		</collection>  
-		<collection name="output4" label="Univariate fits" type="list">
+		<collection name="univariatePlots" label="Univariate fits" type="list">
 			<discover_datasets pattern="__designation_and_ext__" format="png" directory="univariate-fits"/>
 		</collection>  
 	</outputs>
