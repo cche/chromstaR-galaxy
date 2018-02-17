@@ -1,0 +1,247 @@
+<tool id="chromstaR" name="chromstaR" version="1.5.1">
+	<description>- Multivariate ChIP-seq analysis</description>
+	<requirements>
+		<requirement type="package" version="3.4.3">R</requirement>
+		<requirement type="package" version="1.5.1">chromstaR</requirement>
+		<requirement type="package" version="1.4.4">optparse</requirement>
+	</requirements>
+	<stdio>
+		<exit_code range="1:" />
+	</stdio>
+	<command detect_errors="exit_code"><![CDATA[
+	Rscript '$__tool_directory__/chromstaR.R'
+		--inputfolder ""
+		--experiment.table $experimentTable
+		--outputfolder outputfolder
+		--numCPU \${GALAXY_SLOTS:-4}
+		--binsize $binsize
+		--stepsize $stepsize
+		#if str( $format.fileformat ) == 'bed':
+			--assembly $format.chromlen
+		#end if
+		--remove.duplicate.reads $removeDup
+		--min.mapq $minMapQ
+		--format $format.fileformat
+		#if str( $prefitChr ) != '':
+			--prefit.on.chr $prefitChr
+		#end if
+		--eps.univariate $epsUni
+		--max.time $maxTime
+		--max.iter $maxIter
+		--read.cutoff.absolute $readCutoff
+		--keep.posteriors $keepPosteriors
+		--mode $mode
+		--max.states $maxStates
+		--per.chrom $perChrom
+		--eps.multivariate $epsMulti
+	]]></command>
+	<configfiles>
+		<configfile name="experimentTable">
+file	mark	condition	replicate	pairedEndReads	controlFiles
+#for $sample in $format.rep_inputfile:
+#if str( $sample.inputfile ) != '':
+	#if str( $sample.control ) == 'None':
+$sample.inputfile	$sample.mark	$sample.condition	$sample.replicate	$sample.paired	NA
+	#else
+$sample.inputfile	$sample.mark	$sample.condition	$sample.replicate	$sample.paired	$sample.control
+	#end if
+#end if
+#end for
+		</configfile>
+	</configfiles>
+
+	<inputs>
+		<conditional name="format">
+			<param type="select" name="fileformat" label="Select input file format">
+				<option value="bam">BAM file</option>
+				<option value="bed">BED file</option>
+			</param>
+			<when value="bam">
+				<repeat name="rep_inputfile" title="Sample" min="1">
+					<param type="data" name="inputfile" format="bam" label="BAM file"/>
+					<param type="text" name="condition" label="Condition, could be control, treatement, etc"/>
+					<param type="text" name="mark" label="Histone mark for the experiment"/>
+					<param type="text" name="replicate" label="Number of replicate"/>
+						<param type="select" name="paired" label="Choose whether it is single or paired">
+							<option value="FALSE">Single end</option>
+							<option value="TRUE">Paired end</option>
+						</param>
+					<param type="data" name="control" format="bam" optional="True" label="Input file for the sample"/>
+				</repeat>
+			</when>
+			<when value="bed">
+				<param type="data" name="chromlen" format="tabular" optional="True" label="Chromosome length file"/>
+				<repeat name="rep_inputfile" title="Sample" min="1">
+					<param type="data" name="inputfile" format="bed" label="BED file"/>
+					<param type="text" name="condition" label="Condition, could be control, treatement, etc"/>
+					<param type="text" name="mark" label="Histone mark for the experiment"/>
+					<param type="text" name="replicate" label="Number of replicate"/>
+						<param type="select" name="paired" label="Chose wether it is single or paired">
+							<option value="FALSE">Single end</option>
+							<option value="TRUE">Paired end</option>
+						</param>
+					<param type="data" name="control" format="bed" optional="True" label="Input file for the sample"/>
+				</repeat>
+			</when>
+		</conditional>
+		<param type="integer" name="binsize"        value="1000" label="Size of bins"/>
+		<param type="integer" name="stepsize"       value="500"  label="Size of steps"/>
+		<param type="boolean" name="removeDup"      truevalue="TRUE" falsevalue="FALSE" checked="True" label="Choose whether to remove duplicate reads"/>
+		<param type="integer" name="minMapQ"        value="10"   label="Min Map quality"/>
+		<param type="text"    name="prefitChr"                   label="Name of chromosome to use for prefit"/>
+		<param type="float"   name="epsUni"         value="0.1"  label="Univariate Epsilon for Baum-Welch"/>
+		<param type="float"   name="epsMulti"       value="0.01" label="Multivariate Epsilon for Baum-Welch"/>
+		<param type="integer" name="maxTime"        value="3600" label="Maximum time for Baum-Welch" optional="True"/>
+		<param type="integer" name="maxIter"        value="5000" label="Maximum iterations for Baum-Welch"/>
+		<param type="integer" name="readCutoff"     value="500"  label="Read count cutoff"/>
+		<param type="boolean" name="keepPosteriors" truevalue="TRUE" falsevalue="FALSE" checked="True" label="Whether or not to keep posteriors"/>
+		<param type="select"  name="mode"                        label="Mode of analysis.">
+			<option value="differential">Differential</option>
+			<option value="combinatorial">Combinatorial</option>
+			<option value="full">Full</option>
+			<option value="separate">Separate</option>
+		</param>
+		<param type="integer" name="maxStates"      value="128"  label="Maximum number of states"/>
+		<param type="boolean" name="perChrom"       truevalue="TRUE" falsevalue="FALSE" checked="True" label="Whether or not to do the multivariate part per chromosome"/>
+	</inputs>
+	<outputs>
+		<data       name="output1" label="chromstaR-object" format="rdata" from_work_dir="chromstaR-result.RData"/>
+		<collection name="output2" label="Peak calls" type="list">
+			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="peak-calls"/>
+		</collection>  
+		<collection name="output3" label="Chromatin states" type="list">
+			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="chromatin-states"/>
+		</collection>  
+	</outputs>
+	<tests>
+		<test>
+			<conditional name="format">
+				<param name="fileformat" value="bam"/>
+				<repeat name="rep_inputfile">
+					<param name="inputfile" value="lv-H3K4me3-BN-female-bio1-tech1.bam" ftype="bam"/>
+					<param name="condition" value="BN"/>
+					<param name="mark"      value="H3K4me3"/>
+					<param name="replicate" value="bio1tech1"/>
+					<param name="paired"    value="FALSE"/>
+					<param name="control"                     ftype="bam"/>
+				</repeat>
+				<repeat name="rep_inputfile">
+					<param name="inputfile" value="lv-H3K4me3-BN-male-bio2-tech1.bam" ftype="bam"/>
+					<param name="condition" value="BN"/>
+					<param name="mark"      value="H3K4me3"/>
+					<param name="replicate" value="bio2tech1"/>
+					<param name="paired"    value="FALSE"/>
+					<param name="control"                     ftype="bam"/>
+				</repeat>
+				<repeat name="rep_inputfile">
+					<param name="inputfile" value="lv-H3K4me3-SHR-male-bio2-tech1.bam" ftype="bam"/>
+					<param name="condition" value="SHR"/>
+					<param name="mark"      value="H3K4me3"/>
+					<param name="replicate" value="bio2tech1"/>
+					<param name="paired"    value="FALSE"/>
+					<param name="control"                     ftype="bam"/>
+				</repeat>
+				<repeat name="rep_inputfile">
+					<param name="inputfile" value="lv-H3K4me3-SHR-male-bio3-tech1.bam" ftype="bam"/>
+					<param name="condition" value="SHR"/>
+					<param name="mark"      value="H3K4me3"/>
+					<param name="replicate" value="bio3tech1"/>
+					<param name="paired"    value="FALSE"/>
+					<param name="control"                     ftype="bam"/>
+				</repeat>
+			</conditional>
+			<param name="binsize"        value="1000"/>
+			<param name="stepsize"       value="500"/>
+			<param name="removeDup"      value="TRUE"/>
+			<param name="minMapQ"        value="10"/>
+			<param name="prefitChr"                 />
+			<param name="epsUni"         value="0.1"/>
+			<param name="epsMulti"       value="0.01"/>
+			<param name="maxTime"        value="3600"/>
+			<param name="maxIter"        value="5000"/>
+			<param name="readCutoff"     value="500"/>
+			<param name="keepPosteriors" value="TRUE"/>
+			<param name="mode"           value="differential"/>
+			<param name="maxStates"      value="128"/>
+			<param name="perChrom"       value="TRUE"/>
+			<output name="output1" file="output_chromstaR-result.rdata"/>
+		</test>
+	</tests>
+	<help><![CDATA[
+Options:
+	-i INPUTFOLDER, --inputfolder=INPUTFOLDER
+		Folder with input files
+
+	-F FORMAT, --format=FORMAT
+		Format of the input files. Either 'bam' or 'bed'.
+
+	-x EXPERIMENT.TABLE, --experiment.table=EXPERIMENT.TABLE
+		Experiment table
+
+	-o OUTPUTFOLDER, --outputfolder=OUTPUTFOLDER
+		Folder for the output files
+
+	-f CONFIGFILE, --configfile=CONFIGFILE
+		chromstaR configuration file. Default is NULL.
+
+	-n NUMCPU, --numCPU=NUMCPU
+		Number of CPUs to use. Default is 1.
+
+	-B BINSIZE, --binsize=BINSIZE
+		Bin size. Default is 1000.
+
+	-S STEPSIZE, --stepsize=STEPSIZE
+		Step size for bin offset. Default is 500.
+
+	-a ASSEMBLY, --assembly=ASSEMBLY
+		Genome assembly. Default is NULL.
+
+	-c CHROMOSOMES, --chromosomes=CHROMOSOMES
+		Chromosomes to use in the analysis
+
+	-D REMOVE.DUPLICATE.READS, --remove.duplicate.reads=REMOVE.DUPLICATE.READS
+		Whether or not to remove duplicate reads. Default is TRUE.
+
+	-Q MIN.MAPQ, --min.mapq=MIN.MAPQ
+		Minimum mapping quality. Default is 10.
+
+	-P PREFIT.ON.CHR, --prefit.on.chr=PREFIT.ON.CHR
+		Prefit on chromosome
+
+	-U EPS.UNIVARIATE, --eps.univariate=EPS.UNIVARIATE
+		Univariate epsilon for Baum-Welch. Default is 0.1.
+
+	-T MAX.TIME, --max.time=MAX.TIME
+		Maximum time for Baum-Welch. Default is NULL.
+
+	-I MAX.ITER, --max.iter=MAX.ITER
+		Maximum iterations for Baum-Welch. Default is 5000.
+
+	-R READ.CUTOFF.ABSOLUTE, --read.cutoff.absolute=READ.CUTOFF.ABSOLUTE
+		Read count cutoff. Default is 500.
+
+	-k KEEP.POSTERIORS, --keep.posteriors=KEEP.POSTERIORS
+		Whether or not to keep posteriors. Default is TRUE.
+
+	-m MODE, --mode=MODE
+		Mode of analysis. One of 'differential', 'combinatorial', 'full', 'separate'. Default is differential.
+
+	-X MAX.STATES, --max.states=MAX.STATES
+		Maximum number of states. Default is 128.
+
+	-p PER.CHROM, --per.chrom=PER.CHROM
+		Whether or not to do the multivariate part per chromosome. Default is TRUE.
+
+	-M EPS.MULTIVARIATE, --eps.multivariate=EPS.MULTIVARIATE
+		Multivariate epsilon for Baum-Welch. Default is 0.01.
+
+	-e EXCLUSIVE.TABLE, --exclusive.table=EXCLUSIVE.TABLE
+		Exclusive table. Default is NULL.
+
+	-h, --help
+		Show this help message and exit
+	]]></help>
+  <citations>
+		<citation type="doi">10.1101/038612</citation>
+  </citations>
+</tool>
