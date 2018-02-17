@@ -96,10 +96,10 @@ $sample.inputfile	$sample.mark	$sample.condition	$sample.replicate	$sample.paire
 		<param type="integer" name="readCutoff"     value="500"  label="Read count cutoff"/>
 		<param type="boolean" name="keepPosteriors" truevalue="TRUE" falsevalue="FALSE" checked="True" label="Whether or not to keep posteriors"/>
 		<param type="select"  name="mode"                        label="Mode of analysis.">
-			<option value="differential">Differential</option>
-			<option value="combinatorial">Combinatorial</option>
-			<option value="full">Full</option>
-			<option value="separate">Separate</option>
+			<option value="differential">Differential (joint analysis of conditions)</option>
+			<option value="combinatorial">Combinatorial (joint analysis of marks)</option>
+			<option value="full">Full (joint analysis of everything)</option>
+			<option value="separate">Separate (only replicates are treated jointly)</option>
 		</param>
 		<param type="integer" name="maxStates"      value="128"  label="Maximum number of states"/>
 		<param type="boolean" name="perChrom"       truevalue="TRUE" falsevalue="FALSE" checked="True" label="Whether or not to do the multivariate part per chromosome"/>
@@ -111,6 +111,9 @@ $sample.inputfile	$sample.mark	$sample.condition	$sample.replicate	$sample.paire
 		</collection>  
 		<collection name="output3" label="Chromatin states" type="list">
 			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="chromatin-states"/>
+		</collection>  
+		<collection name="output4" label="Univariate fits" type="list">
+			<discover_datasets pattern="__designation_and_ext__" format="png" directory="univariate-fits"/>
 		</collection>  
 	</outputs>
 	<tests>

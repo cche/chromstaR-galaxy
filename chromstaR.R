@@ -107,6 +107,16 @@ for (file in files) {
     print(command)
     system(command = command, wait = TRUE)
 }
+## Move univariate plots to separate folder
+folder.new <- 'univariate-fits'
+if (!file.exists(folder.new)) { dir.create(folder.new) }
+files <- list.files(file.path(opt$outputfolder, 'PLOTS', 'univariate-distributions'), pattern='\\.png')
+for (file in files) {
+    filename.new <- sub("_binsize.*png", ".png", file)
+    command <- paste0("mv ", file.path(opt$outputfolder, 'PLOTS', 'univariate-distributions', file), " ", file.path(folder.new, filename.new))
+    print(command)
+    system(command = command, wait = TRUE)
+}
 
 total.time <- proc.time() - ptm.start; message("Total elapsed time: ",round(total.time[3],2),"s")
 

@@ -21,7 +21,13 @@ option_list <- list(
   make_option(c("-b", "--bpAroundAnnotation"), type = 'numeric', default = 10000,
               help="Base-pairs to consider around annotation. Default is %default."),
   make_option(c("-i", "--numIntervals"), type = 'numeric', default = 20,
-              help="Intervals to consider inside annotation. Default is %default.")
+              help="Intervals to consider inside annotation. Default is %default."),
+  make_option(c("-s", "--statistic"), type = 'character', default = 'fold',
+              help="Statistic to calculate. Either 'fold' or 'fraction'. Default is %default."),
+  make_option(c("-l", "--numLoci"), type = 'numeric', default = Inf,
+              help="Maximum number of rows for the count heatmap. Default is %default."),
+  make_option(c("-S", "--sortBySample"), type = 'numeric', default = NULL,
+              help="Number of the sample by which the count heatmap is to be sorted. Default is %default.")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 
@@ -42,16 +48,20 @@ time <- proc.time() - ptm.start; message(" ",round(time[3],2),"s")
 
 annotation <- readCustomBedFile(bedfile = opt$annotationBed6, col.classes = c('character', 'numeric', 'numeric', 'character', 'numeric', 'character'), chromosome.format = NULL)
 model <- loadHmmsFromFiles(opt$chromstarObject)[[1]]
-
-## Plot enrichment around annotation
 savefolder <- "plotEnrichment"
 if (!file.exists(savefolder)) { dir.create(savefolder) }
-for (what in c('counts', 'peaks', 'combinations', 'transitions')) {
-    ggplts <- plotEnrichment(hmm = model, annotation = annotation, bp.around.annotation = opt$bpAroundAnnotation, num.intervals = opt$numIntervals, what = what)
+
+## Plot enrichment around annotation
+for (what in c('counts', 'peaks', 'combinations')) {
+    ggplts <- plotEnrichment(hmm = model, annotation = annotation, bp.around.annotation = opt$bpAroundAnnotation, num.intervals = opt$numIntervals, what = what, statistic = opt$statistic)
     for (i1 in 1:length(ggplts)) {
       ggsave(ggplts[[i1]], filename = file.path(savefolder, paste0(what, '_', names(ggplts)[i1], '.png')), width = 10, height = 7)
     }
 }
+
+## Count heatmap around start of annotation
+ggplt <- plotEnrichCountHeatmap(hmm = model, annotation = annotation, bp.around.annotation = opt$bpAroundAnnotation, max.rows = opt$numLoci, sortByColumns = opt$sortBySample)
+ggsave(ggplt, filename = file.path(savefolder, paste0('countHeatmap.png')), width = 10, height = 7)
 
 total.time <- proc.time() - ptm.start; message("Total elapsed time: ",round(total.time[3],2),"s")
 

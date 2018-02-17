@@ -14,13 +14,26 @@
 		--annotationBed6 $annotationBed6
 		--bpAroundAnnotation $bpAroundAnnotation
 		--numIntervals $numIntervals
+		--statistic $statistic
+		#if str($numLoci) != '':
+			--numLoci $numLoci
+		#end if
+		#if str($sortBySample) != '':
+			--sortBySample $sortBySample
+		#end if
 	]]></command>
 
 	<inputs>
-		<param type="data"    name="annotationBed6"      format="bed"   label="BED file with annotation"/>
 		<param type="data"    name="chromstarObject"     format="rdata" label="chromstaR object"/>
-		<param type="integer" name="bpAroundAnnotation"  value="10000"  label="Base-pairs to consider around annotation."/>
-		<param type="integer" name="numIntervals"        value="20"     label="Intervals to consider inside annotation."/>
+		<param type="data"    name="annotationBed6"      format="bed"   label="BED file with annotation"/>
+		<param type="integer" name="bpAroundAnnotation"  value="10000"  label="Base-pairs to consider around annotation"/>
+		<param type="integer" name="numIntervals"        value="20"     label="Intervals to consider inside annotation"/>
+		<param type="select"  name="statistic"                          label="Statistic to calculate">
+				<option value="fold">Fold enrichment</option>
+				<option value="fraction">Fraction enrichment</option>
+		</param>
+		<param type="integer" name="numLoci"                            label="Number of random loci to use in the count heatmap" optional="True"/>
+		<param type="integer" name="sortBySample"                       label="Number of sample by which the count heatmap is sorted" optional="True"/>
 	</inputs>
 	<outputs>
 		<collection name="output1" label="Enrichment plots" type="list">
@@ -38,6 +51,21 @@ Options:
 
 	-a ANNOTATIONBED6, --annotationBed6=ANNOTATIONBED6
 		Annotation file in BED-6 format.
+
+	-b BPAROUNDANNOTATION, --bpAroundAnnotation=BPAROUNDANNOTATION
+		Base-pairs to consider around annotation. Default is 10000.
+
+	-i NUMINTERVALS, --numIntervals=NUMINTERVALS
+		Intervals to consider inside annotation. Default is 20.
+
+	-s STATISTIC, --statistic=STATISTIC
+		Statistic to calculate. Either 'fold' or 'fraction'. Default is fold.
+
+	-l NUMLOCI, --numLoci=NUMLOCI
+		Maximum number of rows for the count heatmap. Default is 1000.
+
+	-S SORTBYSAMPLE, --sortBySample=SORTBYSAMPLE
+		Number of the sample by which the count heatmap is to be sorted. Default is NULL.
 
 	-h, --help
 		Show this help message and exit

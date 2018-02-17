@@ -1,0 +1,57 @@
+<tool id="chromstaR_changeCutoff" name="chromstaR change cutoff" version="1.5.1">
+	<description>on posterior probabilities to adjust sensitivity of peak detection</description>
+	<requirements>
+		<requirement type="package" version="3.4.3">R</requirement>
+		<requirement type="package" version="1.5.1">chromstaR</requirement>
+		<requirement type="package" version="1.4.4">optparse</requirement>
+	</requirements>
+	<stdio>
+		<exit_code range="1:" />
+	</stdio>
+	<command detect_errors="exit_code"><![CDATA[
+	Rscript '$__tool_directory__/chromstaR_changeCutoff.R'
+		--chromstarObject $chromstarObject
+		--changeWhat $changeWhat
+		--cutoff $cutoff
+	]]></command>
+
+	<inputs>
+		<param type="data"    name="chromstarObject"  format="rdata"  label="chromstaR object"/>
+		<param type="select"  name="changeWhat"                       label="Apply cutoff on which posterior?">
+				<option value="changePostCutoff">Posteriors in each bin (will fragment peaks)</option>
+				<option value="changeMaxPostCutoff">Maximium posterior in each peak (keeps broad peaks intact)</option>
+		</param>
+		<param type="float" name="cutoff"           value="0.9999"  label="Cutoff on posteriors"/>
+	</inputs>
+	<outputs>
+		<data       name="output1" label="chromstaR-object" format="rdata" from_work_dir="chromstaR-result.RData"/>
+		<collection name="output2" label="Peak calls" type="list">
+			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="peak-calls"/>
+		</collection>  
+		<collection name="output3" label="Chromatin states" type="list">
+			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="chromatin-states"/>
+		</collection>  
+
+	</outputs>
+	<tests>
+		<test>
+		</test>
+	</tests>
+	<help><![CDATA[
+Options:
+	-o CHROMSTAROBJECT, --chromstarObject=CHROMSTAROBJECT
+		File with chromstaR object.
+
+	-w CHANGEWHAT, --changeWhat=CHANGEWHAT
+		Function to use. Either 'changePostCutoff' or 'changeMaxPostCutoff'. Default is changeMaxPostInPeak.
+
+	-c CUTOFF, --cutoff=CUTOFF
+		Cutoff to apply on the posteriors or maxPostInPeak. Default is 0.9999.
+
+	-h, --help
+		Show this help message and exit
+	]]></help>
+  <citations>
+		<citation type="doi">10.1101/038612</citation>
+  </citations>
+</tool>
