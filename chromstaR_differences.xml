@@ -1,0 +1,57 @@
+<tool id="chromstaR_differences" name="chromstaR differential" version="1.5.1">
+	<description>- detection of differentially enriched regions</description>
+	<requirements>
+		<requirement type="package" version="3.4.3">R</requirement>
+		<requirement type="package" version="1.5.1">chromstaR</requirement>
+		<requirement type="package" version="1.4.4">optparse</requirement>
+	</requirements>
+	<stdio>
+		<exit_code range="1:" />
+	</stdio>
+	<command detect_errors="exit_code"><![CDATA[
+	Rscript '$__tool_directory__/chromstaR_differences.R'
+		--chromstarObject $chromstarObject
+    --minWidth $minWidth
+    --differentialScore $differentialScore
+		--differentialPosterior $differentialPosterior
+	]]></command>
+
+	<inputs>
+		<param type="data"    name="chromstarObject"       format="rdata"    label="chromstaR object"/>
+		<param type="integer" name="minWidth"              value="300"       label="Minimum width in base-pairs for differential regions"/>
+		<param type="float"   name="differentialScore"     value="0.9999"    label="Minimum differential score to detect differences (between 0 and #marks)"/>
+		<param type="float"   name="differentialPosterior" value="0.9999"    label="Minimum differential posterior to detect pairwise differences (between 0 and 1)"/>
+	</inputs>
+	<outputs>
+		<collection name="output1" label="Differential chromatin states" type="list">
+			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="chromatin-diffs"/>
+		</collection>  
+		<collection name="output2" label="Pairwise differential peaks" type="list">
+			<discover_datasets pattern="__designation_and_ext__" format="bed" directory="pairwise-diffs"/>
+		</collection>  
+	</outputs>
+	<tests>
+		<test>
+		</test>
+	</tests>
+	<help><![CDATA[
+Options:
+	-o CHROMSTAROBJECT, --chromstarObject=CHROMSTAROBJECT
+		File with chromstaR object.
+
+	-m MINWIDTH, --minWidth=MINWIDTH
+		Minimum width in base-pairs for differential regions. Default is 300.
+
+	-s DIFFERENTIALSCORE, --differentialScore=DIFFERENTIALSCORE
+		Minimum differential score to detect differences. Default is 0.9999.
+
+	-p DIFFERENTIALPOSTERIOR, --differentialPosterior=DIFFERENTIALPOSTERIOR
+		Minimum differential posterior to detect pairwise differences. Default is 0.9999.
+
+	-h, --help
+		Show this help message and exit
+	]]></help>
+  <citations>
+		<citation type="doi">10.1101/038612</citation>
+  </citations>
+</tool>

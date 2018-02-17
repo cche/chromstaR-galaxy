@@ -47,7 +47,9 @@ time <- proc.time() - ptm.start; message(" ",round(time[3],2),"s")
 #===========
 
 annotation <- readCustomBedFile(bedfile = opt$annotationBed6, col.classes = c('character', 'numeric', 'numeric', 'character', 'numeric', 'character'), chromosome.format = NULL)
+ptm <- chromstaR:::startTimedMessage("Loading model ...")
 model <- loadHmmsFromFiles(opt$chromstarObject)[[1]]
+chromstaR:::stopTimedMessage(ptm)
 savefolder <- "plotEnrichment"
 if (!file.exists(savefolder)) { dir.create(savefolder) }
 

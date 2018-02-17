@@ -38,7 +38,10 @@ time <- proc.time() - ptm.start; message(" ",round(time[3],2),"s")
 ### Main ###
 #===========
 
+ptm <- chromstaR:::startTimedMessage("Loading model ...")
 model <- loadHmmsFromFiles(opt$chromstarObject)[[1]]
+chromstaR:::stopTimedMessage(ptm)
+
 if (opt$changeWhat == 'changePostCutoff') {
     new.model <- changePostCutoff(model, post.cutoff = opt$cutoff)
 } else if (opt$changeWhat == 'changeMaxPostCutoff') {
