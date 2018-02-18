@@ -10,16 +10,16 @@
 	</stdio>
 	<command detect_errors="exit_code"><![CDATA[
 	Rscript '$__tool_directory__/chromstaR_enrichment.R'
-		--chromstarObject '$chromstarObject'
-		--annotationBed6 '$annotationBed6'
-		--bpAroundAnnotation $bpAroundAnnotation
-		--numIntervals $numIntervals
-		--statistic '$statistic'
-		#if str($numLoci) != '':
-			--numLoci $numLoci
+		--chromstarObject '$datainput.chromstarObject'
+		--annotationBed6 '$datainput.annotationBed6'
+		--bpAroundAnnotation $opt.bpAroundAnnotation
+		--numIntervals $opt.numIntervals
+		--statistic '$opt.statistic'
+		#if str($countheatmap.numLoci) != '':
+			--numLoci $countheatmap.numLoci
 		#end if
-		#if str($sortBySample) != '':
-			--sortBySample $sortBySample
+		#if str($countheatmap.sortBySample) != '':
+			--sortBySample $countheatmap.sortBySample
 		#end if
 	]]></command>
 

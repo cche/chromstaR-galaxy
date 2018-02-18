@@ -16,7 +16,7 @@ library(optparse)
 option_list <- list(
   make_option(c("-o", "--chromstarObject"), type = 'character',
               help="File with chromstaR object."),
-  make_option(c("-w", "--changeWhat"), type = 'character', default = "changeMaxPostInPeak",
+  make_option(c("-w", "--changeWhat"), type = 'character', default = "changeMaxPostCutoff",
               help="Function to use. Either 'changePostCutoff' or 'changeMaxPostCutoff'. Default is %default."),
   make_option(c("-c", "--cutoff"), type = 'numeric', default = 0.9999,
               help="Cutoff to apply on the posteriors or maxPostInPeak. Default is %default.")

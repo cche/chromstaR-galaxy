@@ -14,31 +14,31 @@
 		--experiment.table $experimentTable
 		--outputfolder outputfolder
 		--numCPU \${GALAXY_SLOTS:-4}
-		--binsize $binsize
-		--stepsize $stepsize
-		#if str( $format.fileformat ) == 'bed':
-			--assembly '$format.chromlen'
+		--binsize $opt.binsize
+		--stepsize $opt.stepsize
+		#if str( $datainput.format.fileformat ) == 'bed':
+			--assembly '$datainput.format.chromlen'
 		#end if
-		--remove.duplicate.reads $removeDup
-		--min.mapq $minMapQ
-		--format $format.fileformat
-		#if str( $prefitChr ) != '':
-			--prefit.on.chr '$prefitChr'
+		--remove.duplicate.reads $binopt.removeDup
+		--min.mapq $binopt.minMapQ
+		--format $datainput.format.fileformat
+		#if str( $opt.prefitChr ) != '':
+			--prefit.on.chr '$opt.prefitChr'
 		#end if
-		--eps.univariate $epsUni
-		--max.time $maxTime
-		--max.iter $maxIter
-		--read.cutoff.absolute $readCutoff
-		--keep.posteriors $keepPosteriors
-		--mode '$mode'
-		--max.states $maxStates
-		--per.chrom $perChrom
-		--eps.multivariate $epsMulti
+		--eps.univariate $runopt.epsUni
+		--max.time $runopt.maxTime
+		--max.iter $runopt.maxIter
+		--read.cutoff.absolute $runopt.readCutoff
+		--keep.posteriors $runopt.keepPosteriors
+		--mode '$opt.mode'
+		--max.states $runopt.maxStates
+		--per.chrom $runopt.perChrom
+		--eps.multivariate $runopt.epsMulti
 	]]></command>
 	<configfiles>
 		<configfile name="experimentTable">
 file	mark	condition	replicate	pairedEndReads	controlFiles
-#for $sample in $format.rep_inputfile:
+#for $sample in $datainput.format.rep_inputfile:
 #if str( $sample.inputfile ) != '':
 	#if str( $sample.control ) == 'None':
 $sample.inputfile	$sample.mark	$sample.condition	$sample.replicate	$sample.paired	NA

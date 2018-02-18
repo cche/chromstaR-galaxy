@@ -18,8 +18,8 @@
 	<inputs>
 		<param type="data"    name="chromstarObject"  format="rdata"  label="chromstaR object"/>
 		<param type="select"  name="changeWhat"                       label="Apply cutoff on which posterior?">
-				<option value="changePostCutoff">Posteriors in each bin (will fragment peaks)</option>
-				<option value="changeMaxPostCutoff">Maximium posterior in each peak (keeps broad peaks intact)</option>
+			<option value="changePostCutoff">Posteriors in each bin (will fragment peaks)</option>
+			<option value="changeMaxPostCutoff">Maximium posterior in each peak (keeps broad peaks intact)</option>
 		</param>
 		<param type="float" name="cutoff"           value="0.9999"  label="Cutoff"/>
 	</inputs>
@@ -43,7 +43,7 @@ Options:
 		File with chromstaR object.
 
 	-w CHANGEWHAT, --changeWhat=CHANGEWHAT
-		Function to use. Either 'changePostCutoff' or 'changeMaxPostCutoff'. Default is changeMaxPostInPeak.
+		Function to use. Either 'changePostCutoff' or 'changeMaxPostCutoff'. Default is changeMaxPostCutoff.
 
 	-c CUTOFF, --cutoff=CUTOFF
 		Cutoff to apply on the posteriors or maxPostInPeak. Default is 0.9999.
