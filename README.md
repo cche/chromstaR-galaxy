@@ -6,6 +6,12 @@ This repository contains a galaxy-wrapper for [chromstaR](https://github.com/ata
 Installation
 ------------
 
+Clone this repository into *galaxy/tools/* with
+
+```
+git clone https://github.com/cche/chromstaR-galaxy.git
+```
+
 You can add the following lines to your *galaxy/config/tool_conf.xml* file to install it:
 
 ```xml
