@@ -1,5 +1,5 @@
-<tool id="chromstaR" name="chromstaR" version="1.5.1">
-	<description>- Multivariate ChIP-seq analysis</description>
+<tool id="chromstaR_multivariate" name="chromstaR multivariate" version="0.99.0">
+	<description>ChIP-seq analysis</description>
 	<requirements>
 		<requirement type="package" version="3.4.3">R</requirement>
 		<requirement type="package" version="1.5.1">chromstaR</requirement>
@@ -9,7 +9,7 @@
 		<exit_code range="1:" />
 	</stdio>
 	<command detect_errors="exit_code"><![CDATA[
-	Rscript '$__tool_directory__/chromstaR.R'
+	Rscript '$__tool_directory__/chromstaR_multivariate.R'
 		--inputfolder ""
 		--experiment.table $experimentTable
 		--outputfolder outputfolder
@@ -17,20 +17,20 @@
 		--binsize $binsize
 		--stepsize $stepsize
 		#if str( $format.fileformat ) == 'bed':
-			--assembly $format.chromlen
+			--assembly '$format.chromlen'
 		#end if
 		--remove.duplicate.reads $removeDup
 		--min.mapq $minMapQ
 		--format $format.fileformat
 		#if str( $prefitChr ) != '':
-			--prefit.on.chr $prefitChr
+			--prefit.on.chr '$prefitChr'
 		#end if
 		--eps.univariate $epsUni
 		--max.time $maxTime
 		--max.iter $maxIter
 		--read.cutoff.absolute $readCutoff
 		--keep.posteriors $keepPosteriors
-		--mode $mode
+		--mode '$mode'
 		--max.states $maxStates
 		--per.chrom $perChrom
 		--eps.multivariate $epsMulti
@@ -51,58 +51,66 @@ $sample.inputfile	$sample.mark	$sample.condition	$sample.replicate	$sample.paire
 	</configfiles>
 
 	<inputs>
-		<conditional name="format">
-			<param type="select" name="fileformat" label="Select input file format">
-				<option value="bam">BAM file</option>
-				<option value="bed">BED file</option>
+		<section name="datainput" title="Data input" expanded="True">
+			<conditional name="format">
+				<param type="select" name="fileformat" label="Select input file format">
+					<option value="bam">BAM file</option>
+					<option value="bed">BED file</option>
+				</param>
+				<when value="bam">
+					<repeat name="rep_inputfile" title="Sample" min="1">
+						<param type="data" name="inputfile" format="bam" label="BAM file"/>
+						<param type="text" name="condition" label="Condition, could be control, treatement, etc"/>
+						<param type="text" name="mark" label="Histone mark for the experiment"/>
+						<param type="text" name="replicate" label="Number of replicate"/>
+							<param type="select" name="paired" label="Choose whether it is single or paired">
+								<option value="FALSE">Single end</option>
+								<option value="TRUE">Paired end</option>
+							</param>
+						<param type="data" name="control" format="bam" optional="True" label="Input file for the sample"/>
+					</repeat>
+				</when>
+				<when value="bed">
+					<param type="data" name="chromlen" format="tabular" optional="True" label="Chromosome length file"/>
+					<repeat name="rep_inputfile" title="Sample" min="1">
+						<param type="data" name="inputfile" format="bed" label="BED file"/>
+						<param type="text" name="condition" label="Condition, could be control, treatement, etc"/>
+						<param type="text" name="mark" label="Histone mark for the experiment"/>
+						<param type="text" name="replicate" label="Number of replicate"/>
+							<param type="select" name="paired" label="Chose wether it is single or paired">
+								<option value="FALSE">Single end</option>
+								<option value="TRUE">Paired end</option>
+							</param>
+						<param type="data" name="control" format="bed" optional="True" label="Input file for the sample"/>
+					</repeat>
+				</when>
+			</conditional>
+		</section>
+		<section name="opt" title="Parameters" expanded="True">
+			<param type="select"  name="mode"                        label="Mode of analysis">
+				<option value="differential">Differential (joint analysis of conditions)</option>
+				<option value="combinatorial">Combinatorial (joint analysis of marks)</option>
+				<option value="full">Full (joint analysis of everything)</option>
+				<option value="separate">Separate (only replicates are treated jointly)</option>
 			</param>
-			<when value="bam">
-				<repeat name="rep_inputfile" title="Sample" min="1">
-					<param type="data" name="inputfile" format="bam" label="BAM file"/>
-					<param type="text" name="condition" label="Condition, could be control, treatement, etc"/>
-					<param type="text" name="mark" label="Histone mark for the experiment"/>
-					<param type="text" name="replicate" label="Number of replicate"/>
-						<param type="select" name="paired" label="Choose whether it is single or paired">
-							<option value="FALSE">Single end</option>
-							<option value="TRUE">Paired end</option>
-						</param>
-					<param type="data" name="control" format="bam" optional="True" label="Input file for the sample"/>
-				</repeat>
-			</when>
-			<when value="bed">
-				<param type="data" name="chromlen" format="tabular" optional="True" label="Chromosome length file"/>
-				<repeat name="rep_inputfile" title="Sample" min="1">
-					<param type="data" name="inputfile" format="bed" label="BED file"/>
-					<param type="text" name="condition" label="Condition, could be control, treatement, etc"/>
-					<param type="text" name="mark" label="Histone mark for the experiment"/>
-					<param type="text" name="replicate" label="Number of replicate"/>
-						<param type="select" name="paired" label="Chose wether it is single or paired">
-							<option value="FALSE">Single end</option>
-							<option value="TRUE">Paired end</option>
-						</param>
-					<param type="data" name="control" format="bed" optional="True" label="Input file for the sample"/>
-				</repeat>
-			</when>
-		</conditional>
-		<param type="integer" name="binsize"        value="1000" label="Size of bins"/>
-		<param type="integer" name="stepsize"       value="500"  label="Size of steps"/>
-		<param type="boolean" name="removeDup"      truevalue="TRUE" falsevalue="FALSE" checked="True" label="Choose whether to remove duplicate reads"/>
-		<param type="integer" name="minMapQ"        value="10"   label="Min Map quality"/>
-		<param type="text"    name="prefitChr"                   label="Name of chromosome to use for prefit"/>
-		<param type="float"   name="epsUni"         value="0.1"  label="Univariate Epsilon for Baum-Welch"/>
-		<param type="float"   name="epsMulti"       value="0.01" label="Multivariate Epsilon for Baum-Welch"/>
-		<param type="integer" name="maxTime"        value="3600" label="Maximum time for Baum-Welch" optional="True"/>
-		<param type="integer" name="maxIter"        value="5000" label="Maximum iterations for Baum-Welch"/>
-		<param type="integer" name="readCutoff"     value="500"  label="Read count cutoff"/>
-		<param type="boolean" name="keepPosteriors" truevalue="TRUE" falsevalue="FALSE" checked="True" label="Whether or not to keep posteriors"/>
-		<param type="select"  name="mode"                        label="Mode of analysis.">
-			<option value="differential">Differential (joint analysis of conditions)</option>
-			<option value="combinatorial">Combinatorial (joint analysis of marks)</option>
-			<option value="full">Full (joint analysis of everything)</option>
-			<option value="separate">Separate (only replicates are treated jointly)</option>
-		</param>
-		<param type="integer" name="maxStates"      value="128"  label="Maximum number of states"/>
-		<param type="boolean" name="perChrom"       truevalue="TRUE" falsevalue="FALSE" checked="True" label="Whether or not to do the multivariate part per chromosome"/>
+			<param type="integer" name="binsize"        value="1000" label="Bin size"/>
+			<param type="integer" name="stepsize"       value="500"  label="Step size for sliding bins"/>
+			<param type="text"    name="prefitChr"                   label="Chromosome to use for pre-fit"/>
+		</section>
+		<section name="binopt" title="Advanced binning options" expanded="False">
+			<param type="boolean" name="removeDup"      truevalue="TRUE" falsevalue="FALSE" checked="True" label="Remove duplicate reads?"/>
+			<param type="integer" name="minMapQ"        value="10"   label="Minimum mapping quality"/>
+		</section>
+		<section name="runopt" title="Advanced running options" expanded="False">
+			<param type="float"   name="epsUni"         value="0.1"  label="Univariate Epsilon for Baum-Welch"/>
+			<param type="float"   name="epsMulti"       value="0.01" label="Multivariate Epsilon for Baum-Welch"/>
+			<param type="integer" name="maxTime"        value="3600" label="Maximum time for Baum-Welch" optional="True"/>
+			<param type="integer" name="maxIter"        value="5000" label="Maximum iterations for Baum-Welch"/>
+			<param type="integer" name="readCutoff"     value="500"  label="Read count cutoff"/>
+			<param type="boolean" name="keepPosteriors" truevalue="TRUE" falsevalue="FALSE" checked="True" label="Keep posteriors?"/>
+			<param type="integer" name="maxStates"      value="128"  label="Maximum number of states"/>
+			<param type="boolean" name="perChrom"       truevalue="TRUE" falsevalue="FALSE" checked="True" label="Parallelize the multivariate part per chromosome?"/>
+		</section>
 	</inputs>
 	<outputs>
 		<data       name="chromstarObject" label="chromstaR-object" format="rdata" from_work_dir="chromstaR-result.RData"/>

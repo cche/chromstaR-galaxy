@@ -1,4 +1,4 @@
-<tool id="chromstaR_differences" name="chromstaR differential" version="1.5.1">
+<tool id="chromstaR_differences" name="chromstaR differential" version="0.99.0">
 	<description>- detection of differentially enriched regions</description>
 	<requirements>
 		<requirement type="package" version="3.4.3">R</requirement>
@@ -10,7 +10,7 @@
 	</stdio>
 	<command detect_errors="exit_code"><![CDATA[
 	Rscript '$__tool_directory__/chromstaR_differences.R'
-		--chromstarObject $chromstarObject
+		--chromstarObject '$chromstarObject'
     --minWidth $minWidth
     --differentialScore $differentialScore
 		--differentialPosterior $differentialPosterior

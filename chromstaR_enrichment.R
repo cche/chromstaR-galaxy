@@ -17,7 +17,7 @@ option_list <- list(
   make_option(c("-o", "--chromstarObject"), type = 'character',
               help="File with chromstaR object."),
   make_option(c("-a", "--annotationBed6"), type = 'character',
-              help="Annotation file in BED-6 format."),
+              help="Annotation file in BED6 format."),
   make_option(c("-b", "--bpAroundAnnotation"), type = 'numeric', default = 10000,
               help="Base-pairs to consider around annotation. Default is %default."),
   make_option(c("-i", "--numIntervals"), type = 'numeric', default = 20,

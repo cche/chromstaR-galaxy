@@ -1,4 +1,4 @@
-<tool id="chromstaR_changeCutoff" name="chromstaR change cutoff" version="1.5.1">
+<tool id="chromstaR_changeCutoff" name="chromstaR change cutoff" version="0.99.0">
 	<description>on posterior probabilities to adjust sensitivity of peak detection</description>
 	<requirements>
 		<requirement type="package" version="3.4.3">R</requirement>
@@ -10,8 +10,8 @@
 	</stdio>
 	<command detect_errors="exit_code"><![CDATA[
 	Rscript '$__tool_directory__/chromstaR_changeCutoff.R'
-		--chromstarObject $chromstarObject
-		--changeWhat $changeWhat
+		--chromstarObject '$chromstarObject'
+		--changeWhat '$changeWhat'
 		--cutoff $cutoff
 	]]></command>
 
@@ -21,7 +21,7 @@
 				<option value="changePostCutoff">Posteriors in each bin (will fragment peaks)</option>
 				<option value="changeMaxPostCutoff">Maximium posterior in each peak (keeps broad peaks intact)</option>
 		</param>
-		<param type="float" name="cutoff"           value="0.9999"  label="Cutoff on posteriors"/>
+		<param type="float" name="cutoff"           value="0.9999"  label="Cutoff"/>
 	</inputs>
 	<outputs>
 		<data       name="chromstarObject" label="chromstaR-object" format="rdata" from_work_dir="chromstaR-result.RData"/>
