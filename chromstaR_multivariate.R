@@ -74,10 +74,19 @@ message("Loading libraries ...", appendLF=FALSE); ptm.start <- proc.time()
 suppressPackageStartupMessages(library(chromstaR))
 time <- proc.time() - ptm.start; message(" ",round(time[3],2),"s")
 
+## Print session info
+sessionInfo()
+
 #===========
 ### Main ###
 #===========
 
+## Print experiment table to check
+exp.table <- read.table(opt$experiment.table, header=TRUE)
+print("Experiment table:")
+print(exp.table)
+
+## Run chromstar
 Chromstar(inputfolder = opt$inputfolder, experiment.table = opt$experiment.table, outputfolder = opt$outputfolder, configfile = opt$configfile, numCPU = opt$numCPU, binsize = opt$binsize, stepsize = opt$stepsize, assembly = opt$assembly, chromosomes = opt$chromosomes, remove.duplicate.reads = opt$remove.duplicate.reads, min.mapq = opt$min.mapq, format = opt$format, prefit.on.chr = opt$prefit.on.chr, eps.univariate = opt$eps.univariate, max.time = opt$max.time, max.iter = opt$max.iter, read.cutoff.absolute = opt$read.cutoff.absolute, keep.posteriors = opt$keep.posteriors, mode = opt$mode, max.states = opt$max.states, per.chrom = opt$per.chrom, eps.multivariate = opt$eps.multivariate, exclusive.table = opt$exclusive.table)
 
 ## Print information about produced files
