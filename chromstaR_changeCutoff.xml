@@ -1,9 +1,8 @@
 <tool id="chromstaR_changeCutoff" name="chromstaR change cutoff" version="0.99.0">
 	<description>on posterior probabilities to adjust sensitivity of peak detection</description>
 	<requirements>
-		<requirement type="package" version="3.4.3">R</requirement>
-		<requirement type="package" version="1.5.1">chromstaR</requirement>
-		<requirement type="package" version="1.4.4">optparse</requirement>
+		<requirement type="package" version="1.4.0">bioconductor-chromstar</requirement>
+		<requirement type="package" version="1.4.4">r-optparse</requirement>
 	</requirements>
 	<stdio>
 		<exit_code range="1:" />
