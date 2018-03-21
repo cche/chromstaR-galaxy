@@ -36,8 +36,7 @@
 		--eps.multivariate $runopt.epsMulti
 	]]></command>
 	<configfiles>
-		<configfile name="experimentTable">
-file	mark	condition	replicate	pairedEndReads	controlFiles
+		<configfile name="experimentTable">file	mark	condition	replicate	pairedEndReads	controlFiles
 #for $sample in $datainput.format.rep_inputfile:
 #if str( $sample.inputfile ) != '':
 	#if str( $sample.control ) == 'None':
@@ -46,8 +45,7 @@ $sample.inputfile	$sample.mark	$sample.condition	$sample.replicate	$sample.paire
 $sample.inputfile	$sample.mark	$sample.condition	$sample.replicate	$sample.paired	$sample.control
 	#end if
 #end if
-#end for
-		</configfile>
+#end for</configfile>
 	</configfiles>
 
 	<inputs>
