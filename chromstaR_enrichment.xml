@@ -44,6 +44,9 @@
 		<collection name="enrichmentPlots" label="Enrichment plots" type="list">
 			<discover_datasets pattern="__designation_and_ext__" format="png" directory="plotEnrichment"/>
 		</collection>  
+		<collection name="enrichmentPlotsData" label="Enrichment plots data" type="list">
+			<discover_datasets pattern="__designation_and_ext__" format="tsv" directory="plotEnrichmentData"/>
+		</collection>  
 	</outputs>
 	<tests>
 		<test>
