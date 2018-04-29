@@ -49,16 +49,23 @@ model <- loadHmmsFromFiles(opt$chromstarObject)[[1]]
 chromstaR:::stopTimedMessage(ptm)
 savefolder <- "plotEnrichment"
 if (!file.exists(savefolder)) { dir.create(savefolder) }
-savefolder.data <- "plotEnrichmentData"
+savefolder.data <- "dataEnrichment"
 if (!file.exists(savefolder.data)) { dir.create(savefolder.data) }
 
 ## Plot enrichment around annotation
 for (what in c('counts', 'peaks', 'combinations')) {
+    chromstaR:::messageU("Working on ", what)
     ggplts <- plotEnrichment(hmm = model, annotation = annotation, bp.around.annotation = opt$bpAroundAnnotation, num.intervals = opt$numIntervals, what = what, statistic = opt$statistic)
     for (i1 in 1:length(ggplts)) {
-      ggsave(ggplts[[i1]], filename = file.path(savefolder, paste0(what, '_', names(ggplts)[i1], '.png')), width = 10, height = 7)
+      filename.i1 <- file.path(savefolder, paste0(what, '_', names(ggplts)[i1], '.png'))
+      ptm <- chromstaR:::startTimedMessage("Saving ", filename.i1, " ...")
+      ggsave(ggplts[[i1]], filename = filename.i1, width = 10, height = 7)
+      chromstaR:::stopTimedMessage(ptm)
+      filename.i1 <- file.path(savefolder.data, paste0(what, '_', names(ggplts)[i1], '.tsv'))
+      ptm <- chromstaR:::startTimedMessage("Saving ", filename.i1, " ...")
       d <- ggplts[[i1]]$data
-      write.table(d, file = file.path(savefolder.data, paste0(what, '_', names(ggplts)[i1], '.tsv')), sep='\t', quote = FALSE, row.names = FALSE)
+      write.table(d, file = filename.i1, sep='\t', quote = FALSE, row.names = FALSE)
+      chromstaR:::stopTimedMessage(ptm)
     }
 }
 
